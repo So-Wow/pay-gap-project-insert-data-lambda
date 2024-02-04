@@ -22,8 +22,6 @@ export const handler = async (event): Promise<object> => {
     JSON.parse(messageBody)
   const testModeEnabled = process.env.TEST_MODE === "enabled"
 
-  console.log({data, companyRecordExists, reportYear})
-
   const transformedDataObject = transformObjectKeys(
     {...data, reportYear},
     pascalCaseToSnakeCase
@@ -72,14 +70,24 @@ export const handler = async (event): Promise<object> => {
       await putData(EMPLOYER_TABLE_NAME, companyDataToInsert)
     }
 
-    await patchData(EMPLOYER_HISTORY_TABLE_NAME, companyHistoryDataToInsert)
+    await patchData(
+      EMPLOYER_HISTORY_TABLE_NAME,
+      companyHistoryDataToInsert,
+      data.CompanyNumber
+    )
 
     if (lastReportYear && lastReportYear < reportYear) {
-      const dataToUpsert = {
-        last_report_year: lastReportYear,
-        employer_name: data.employer_name,
+      const companyRecordDataToUpdate = {
+        last_report_year: reportYear,
+        employer_name: data.EmployerName,
+        employer_id: data.EmployerId,
+        company_number: data.CompanyNumber,
       }
-      await patchData(EMPLOYER_TABLE_NAME, dataToUpsert)
+      await patchData(
+        EMPLOYER_TABLE_NAME,
+        companyRecordDataToUpdate,
+        data.CompanyNumber
+      )
     }
 
     await putData(ANNUAL_STATS_TABLE_NAME, statsDataToInsert)

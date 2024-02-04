@@ -35,7 +35,7 @@ export const companyHistoryKeys = [
   "company_link_to_gpginfo",
   "employer_size",
   "current_name",
-  "last_report_year",
+  "report_year",
 ]
 
 export const EMPLOYER_TABLE_NAME = "companies"

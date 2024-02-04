@@ -2,15 +2,17 @@ import {supabase} from "./supabase-client.ts"
 
 const patchData = async (
   tableName: string,
-  data: {}
+  data: {},
+  companyNumber: string
 ): Promise<{status: number; statusText: string} | {error: any}> => {
   const {status, statusText, error} = await supabase
     .from(tableName)
-    .upsert(data, {onConflict: "company_number, report_year, employer_id"})
+    .upsert(data)
+    .eq("company_number", companyNumber)
     .select()
 
   if (error) {
-    console.error("Error inserting data: ", error)
+    console.error(error, data, "Error inserting patch data")
   }
 
   return {status, statusText}

@@ -10,7 +10,7 @@ const putData = async (
     .select()
 
   if (error) {
-    console.error("Error inserting data: ", error)
+    console.error(error, data, "Error inserting data")
   }
 
   return {status, statusText}
