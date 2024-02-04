@@ -1,12 +1,12 @@
 import {supabase} from "./supabase-client.ts"
 
-const putData = async (
+const patchData = async (
   tableName: string,
   data: {}
 ): Promise<{status: number; statusText: string} | {error: any}> => {
   const {status, statusText, error} = await supabase
     .from(tableName)
-    .insert(data)
+    .upsert(data, {onConflict: "company_number, report_year"})
     .select()
 
   if (error) {
@@ -16,4 +16,4 @@ const putData = async (
   return {status, statusText}
 }
 
-export default putData
+export default patchData

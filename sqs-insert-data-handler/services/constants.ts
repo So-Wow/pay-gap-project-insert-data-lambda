@@ -21,6 +21,14 @@ export const statsPropertyKeys = [
 export const companyPropertyKeys = [
   "employer_name",
   "employer_id",
+  "company_number",
+  "current_name",
+  "last_report_year",
+]
+
+export const employerHistoryKeys = [
+  "employer_name",
+  "employer_id",
   "address",
   "post_code",
   "company_number",
@@ -34,3 +42,5 @@ export const companyPropertyKeys = [
 export const EMPLOYER_TABLE_NAME = "companies"
 
 export const ANNUAL_STATS_TABLE_NAME = "annual_report_stats"
+
+export const EMPLOYER_HISTORY_TABLE_NAME = "companies_history"
