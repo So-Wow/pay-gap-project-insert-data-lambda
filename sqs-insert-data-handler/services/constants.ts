@@ -22,11 +22,10 @@ export const companyPropertyKeys = [
   "employer_name",
   "employer_id",
   "company_number",
-  "current_name",
   "last_report_year",
 ]
 
-export const employerHistoryKeys = [
+export const companyHistoryKeys = [
   "employer_name",
   "employer_id",
   "address",

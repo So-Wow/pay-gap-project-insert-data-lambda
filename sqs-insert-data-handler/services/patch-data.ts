@@ -6,7 +6,7 @@ const patchData = async (
 ): Promise<{status: number; statusText: string} | {error: any}> => {
   const {status, statusText, error} = await supabase
     .from(tableName)
-    .upsert(data, {onConflict: "company_number, report_year"})
+    .upsert(data, {onConflict: "company_number, report_year, employer_id"})
     .select()
 
   if (error) {

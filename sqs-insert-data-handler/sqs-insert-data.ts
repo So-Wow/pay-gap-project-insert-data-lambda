@@ -1,3 +1,5 @@
+import {getYear} from "date-fns"
+
 import {
   pascalCaseToSnakeCase,
   transformObjectKeys,
@@ -8,7 +10,7 @@ import patchData from "./services/patch-data.ts"
 import {
   statsPropertyKeys,
   companyPropertyKeys,
-  employerHistoryKeys,
+  companyHistoryKeys,
   EMPLOYER_TABLE_NAME,
   EMPLOYER_HISTORY_TABLE_NAME,
   ANNUAL_STATS_TABLE_NAME,
@@ -16,7 +18,8 @@ import {
 
 export const handler = async (event): Promise<object> => {
   const {MessageBody: messageBody} = event
-  const {data, companyRecordExists, reportYear} = JSON.parse(messageBody)
+  const {data, companyRecordExists, reportYear, lastReportYear} =
+    JSON.parse(messageBody)
   const testModeEnabled = process.env.TEST_MODE === "enabled"
 
   console.log({data, companyRecordExists, reportYear})
@@ -31,14 +34,14 @@ export const handler = async (event): Promise<object> => {
     statsPropertyKeys
   )
 
-  const employerDataToInsert = selectObjectProperties(
+  const companyDataToInsert = selectObjectProperties(
     transformedDataObject,
     companyPropertyKeys
   )
 
-  const employerHistoryDataToInsert = selectObjectProperties(
+  const companyHistoryDataToInsert = selectObjectProperties(
     transformedDataObject,
-    employerHistoryKeys
+    companyHistoryKeys
   )
 
   const response = {
@@ -54,7 +57,8 @@ export const handler = async (event): Promise<object> => {
         statsData: statsDataToInsert,
         companyRecord: companyRecordExists
           ? "Employer data already in db"
-          : employerDataToInsert,
+          : companyDataToInsert,
+        companyHistoryRecord: companyHistoryDataToInsert,
       },
       "test mode enabled"
     )
@@ -65,10 +69,18 @@ export const handler = async (event): Promise<object> => {
     if (!companyRecordExists) {
       console.info("Employer does not exist")
 
-      await putData(EMPLOYER_TABLE_NAME, employerDataToInsert)
+      await putData(EMPLOYER_TABLE_NAME, companyDataToInsert)
     }
 
-    await patchData(EMPLOYER_HISTORY_TABLE_NAME, employerHistoryDataToInsert)
+    await patchData(EMPLOYER_HISTORY_TABLE_NAME, companyHistoryDataToInsert)
+
+    if (lastReportYear && lastReportYear < reportYear) {
+      const dataToUpsert = {
+        last_report_year: lastReportYear,
+        employer_name: data.employer_name,
+      }
+      await patchData(EMPLOYER_TABLE_NAME, dataToUpsert)
+    }
 
     await putData(ANNUAL_STATS_TABLE_NAME, statsDataToInsert)
 

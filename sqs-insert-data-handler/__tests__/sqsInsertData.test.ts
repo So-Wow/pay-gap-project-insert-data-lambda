@@ -25,20 +25,21 @@ describe("It receives an sqs event", () => {
       sinon.assert.calledOnce(stubbedPatchData)
     })
   })
-  describe.only("and the employer already exists", () => {
+  describe("and the employer already exists", () => {
     let result
     before(async () => {
-      sinon.reset()
+      sinon.resetHistory()
 
       stubbedPutData.resolves({status: 201, statusText: "created"})
+      stubbedPatchData.resolves({status: 201, statusText: "created"})
       result = await handler(mockEvent)
     })
 
-    it("should call putData once and return its response", () => {
+    it("should call putData once and patchData and return its response", () => {
       sinon.assert.calledOnce(stubbedPutData)
-      sinon.assert.calledOnce(stubbedPatchData)
+      sinon.assert.calledTwice(stubbedPatchData)
       assert.isObject(result)
-      assert.propertyVal(result, "status", 201)
+      assert.propertyVal(result, "statusCode", 200)
     })
   })
 })
