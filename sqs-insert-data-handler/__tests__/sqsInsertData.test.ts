@@ -2,9 +2,9 @@ import {assert} from "chai"
 import * as sinon from "sinon"
 import "dotenv/config"
 
-import {handler} from "../sqs-insert-data.ts"
-import * as putData from "../services/put-data.ts"
-import * as patchData from "../services/patch-data.ts"
+import {handler} from "../src/index.ts"
+import * as putData from "../src/services/put-data.ts"
+import * as patchData from "../src/services/patch-data.ts"
 import mockEvent from "../events/event-sqs.json"
 import mockEventNewEmployer from "../events/event-sqs-new-company.json"
 
